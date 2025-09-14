@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Çalıştır</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      margin: 0;
+      padding: 10px;
+      font-size: 15px;
+    }
+    .label {
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .row label {
+      font-weight: bold;
+    }
+    #komut {
+      flex: 1;
+      padding: 6px;
+      font-size: 15px;
+    }
+    .buttons {
+      text-align: right;
+      margin-top: 14px;
+    }
+    button {
+      padding: 6px 16px;
+      margin-left: 8px;
+      font-size: 14px;
+    }
+    #fileInput {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="label">Bir program, klasör, belge veya Internet kaynağının adını yazdığınızda Windows sizin için açacaktır.</div>
+
+<div class="row">
+  <label for="komut">Aç:</label>
+  <input type="text" id="komut" placeholder="örnek: notepad">
+  <input type="file" id="fileInput" onchange="updatePath(this)">
+</div>
+
+  <div class="buttons">
+    <button onclick="gonder()">Çalıştır</button>
+    <button onclick="window.close()">İptal</button>
+    <button onclick="document.getElementById('fileInput').click()">Gözat...</button>
+  </div>
+
+  <script>
+    function gonder() {
+      const cmd = document.getElementById("komut").value;
+      fetch("http://localhost:5000/run", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cmd })
+      })
+      .then(res => res.json())
+      .then(data => alert(data.output || data.error));
+    }
+
+    function updatePath(input) {
+      const file = input.files[0];
+      if (file) {
+        document.getElementById("komut").value = file.name;
+      }
+    }
+  </script>
+</body>
+</html>
